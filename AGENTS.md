@@ -19,6 +19,8 @@
 - `.github/workflows/`: packaging and release automation.
 - `meikipop.*.spec`: PyInstaller specs for each platform.
 - `docs/agents/`: deeper agent-facing operating map.
+- `docs/native/`: native macOS architecture, migration, overlay, and platform planning docs.
+- `DESIGN.md`: visual and interaction guidance for the future native app.
 
 ## Essential Commands
 
@@ -51,8 +53,14 @@ pyinstaller meikipop.win.x64.spec
 
 - Repo layout or package boundaries: `docs/agents/repo-map.md`
 - Build, package, or release work: `docs/agents/build-test-release.md`
+- Branches, commits, and PR workflow: `docs/agents/git-workflow.md`
 - Runtime flow or threading questions: `ARCHITECTURE.md`
 - Current risks, stale areas, or unverified assumptions: `CURRENT_STATE.md`
+- Native macOS architecture direction: `docs/native/architecture.md`
+- Native macOS migration phases: `docs/native/migration-plan.md`
+- Native overlay/highlighting constraints: `docs/native/overlay-highlighting.md`
+- macOS-specific implementation notes: `docs/native/macos-platform-notes.md`
+- Native design system and visual rules: `DESIGN.md`
 - Popup, tray, input, or scan-area changes: `docs/agents/components/gui-and-input.md`
 - OCR providers or OCR pipeline changes: `docs/agents/components/ocr-pipeline.md`
 - Lookup, dictionary, or deconjugation changes: `docs/agents/components/dictionary-and-hit-scanning.md`
