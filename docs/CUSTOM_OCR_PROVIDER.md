@@ -1,5 +1,12 @@
 ## how to create a custom ocr provider for meikipop
 
+this is a source-mode extension guide.
+
+if your provider also needs to work in packaged builds, you must additionally update all three pyinstaller spec files at the repo root:
+- `meikipop.macos.spec`
+- `meikipop.linux.x64.spec`
+- `meikipop.win.x64.spec`
+
 this guide explains how to create your own ocr provider to use with meikipop. this allows you to integrate any ocr
 engine you prefer, whether it's an offline model or a web service.
 
@@ -8,16 +15,16 @@ engine you prefer, whether it's an offline model or a web service.
 meikipop will automatically discover and load any valid ocr provider. to be discovered, your provider must meet two
 conditions:
 
-1. **directory:** it must be in its own subdirectory inside `/src/ocr/providers/`. for example:
-   `/src/ocr/providers/my_cool_ocr/`.
+1. **directory:** it must be in its own subdirectory inside `/src/meikipop/ocr/providers/`. for example:
+   `/src/meikipop/ocr/providers/my_cool_ocr/`.
 2. **file:** it must have a `provider.py` file in that directory containing a class that inherits from `OcrProvider`.
 
-the best way to start is to **copy the entire `/src/ocr/providers/dummy/` directory**, rename it, and modify its
+the best way to start is to **copy the entire `/src/meikipop/ocr/providers/dummy/` directory**, rename it, and modify its
 contents. the dummy provider is a fully commented template designed for this purpose.
 
 ## the contract: the ocrprovider interface
 
-your provider class must implement the "contract" defined in `src/ocr/interface.py`. this ensures it can communicate
+your provider class must implement the "contract" defined in `src/meikipop/ocr/interface.py`. this ensures it can communicate
 with the rest of the application.
 
 your class must have:
@@ -78,3 +85,12 @@ once your provider is implemented:
 4. select the NAME of your new provider from the list.
 
 meikipop will now use your class for all ocr operations.
+
+## packaged builds
+
+source-mode discovery is automatic, but packaged builds are not.
+
+if you want your provider to appear in pyinstaller-built apps, add it to the `datas` and `hiddenimports` sections of:
+- `meikipop.macos.spec`
+- `meikipop.linux.x64.spec`
+- `meikipop.win.x64.spec`
