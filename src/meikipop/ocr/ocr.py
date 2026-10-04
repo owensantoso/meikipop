@@ -10,7 +10,6 @@ from typing import Dict, Type, Optional
 
 from meikipop.config.config import config
 from meikipop.ocr.interface import OcrProvider
-from meikipop.ocr.providers.glensv2 import GoogleLensOcrV2
 
 logger = logging.getLogger(__name__)  # Get the logger
 
@@ -80,38 +79,27 @@ class OcrProcessor(threading.Thread):
 
     def _load_provider_from_config(self):
         configured_provider_name = config.ocr_provider
-        default_provider_name = GoogleLensOcrV2.NAME
-
-        provider_to_load_name = configured_provider_name
-
         if configured_provider_name not in self.available_providers:
-            logger.warning(
+            logger.critical(
                 f"Configured OCR provider '{configured_provider_name}' not found. "
-                f"Falling back to default provider '{default_provider_name}'."
+                "Restore its dependencies or explicitly select an available provider "
+                "in config.ini before restarting. No fallback provider will be selected."
             )
-            provider_to_load_name = default_provider_name
+            sys.exit(1)
 
-        if provider_to_load_name not in self.available_providers:
-            fallback_provider_name = list(self.available_providers.keys())[0]
-            logger.warning(
-                f"Default OCR provider '{provider_to_load_name}' not found. "
-                f"Falling back to first available provider: '{fallback_provider_name}'."
-            )
-            provider_to_load_name = fallback_provider_name
-
-        config.ocr_provider = provider_to_load_name
-
-        provider_class = self.available_providers[provider_to_load_name]
+        provider_class = self.available_providers[configured_provider_name]
         try:
             self.ocr_backend = provider_class()
             logger.info(f"Initialized OCR with '{self.ocr_backend.NAME}' provider.")
         except Exception as e:
-            logger.critical(f"Failed to instantiate provider '{provider_to_load_name}' on startup: {e}", exc_info=True)
-            try:
-                self.switch_provider(default_provider_name)
-            except Exception as e:
-                self.ocr_backend = None
-                sys.exit(1)
+            logger.critical(
+                f"Failed to instantiate configured OCR provider '{configured_provider_name}' "
+                f"on startup: {e}. Restore its dependencies or explicitly select another "
+                "provider in config.ini. No fallback provider will be selected.",
+                exc_info=True,
+            )
+            self.ocr_backend = None
+            sys.exit(1)
 
     def _discover_providers(self) -> Dict[str, Type[OcrProvider]]:
         providers: Dict[str, Type[OcrProvider]] = {}
